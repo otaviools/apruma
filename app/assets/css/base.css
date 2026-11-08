@@ -1,0 +1,550 @@
+/* ==========================================================================
+   Apruma · base
+   1. Paleta da marca (valores fixos)
+   2. Tokens semânticos (claro e escuro)
+   3. Guia de layout
+   4. Base e tipografia
+   5. Componentes globais (botões, links, selos)
+   6. Animações compartilhadas
+   ========================================================================== */
+
+/* 1. Paleta da marca: nunca usar direto nos componentes, só pelos tokens semânticos */
+:root {
+  --marca-carvao: #1a1a1a;
+  --marca-chumbo: #5a5852;
+  --marca-taupe: #9a978f;
+  --marca-pedra: #dad7cf;
+  --marca-linho: #edebe6;
+  --marca-papel: #fafaf7;
+  --marca-laranja: #ff5a1f;
+}
+
+/* 2. Tokens semânticos: tema claro */
+:root {
+  color-scheme: light;
+
+  --fundo: var(--marca-papel);
+  --superficie: var(--marca-linho);
+  --superficie-elevada: #ffffff;
+  --texto: var(--marca-carvao);
+  --texto-2: var(--marca-chumbo);
+  --texto-suave: #6b6861;
+  --borda: var(--marca-pedra);
+  --borda-forte: var(--marca-taupe);
+  --destaque: var(--marca-laranja);
+  --destaque-forte: #e84a12;
+  --destaque-texto: #c43d0a;
+  /* Texto sobre o laranja: sempre carvão, nos dois temas (roteiro 2.1) */
+  --sobre-destaque: var(--marca-carvao);
+
+  /* Barras do símbolo (cima, meio) */
+  --simbolo-1: var(--marca-pedra);
+  --simbolo-2: var(--marca-taupe);
+
+  /* Objetos: luz e sombra */
+  --sombra-objeto: 0 40px 80px -30px rgb(26 26 26 / 0.35), 0 12px 24px -12px rgb(26 26 26 / 0.2);
+  --metal-claro: #f4f2ec;
+  --metal-escuro: #8d8a82;
+
+  --linha: 1px solid var(--borda);
+}
+
+/* Tema escuro: ativado pelo @nuxtjs/color-mode com a classe .dark no <html> */
+:root.dark {
+  color-scheme: dark;
+
+  --fundo: #121211;
+  --superficie: #1c1b19;
+  --superficie-elevada: #232220;
+  --texto: #f2f0ea;
+  --texto-2: #c4c1b9;
+  --texto-suave: #9a978f;
+  --borda: #2f2e2b;
+  --borda-forte: var(--marca-chumbo);
+  --destaque-forte: #ff7440;
+  --destaque-texto: #ff7a45;
+
+  --simbolo-1: var(--marca-chumbo);
+  --simbolo-2: var(--marca-taupe);
+
+  --sombra-objeto: 0 40px 80px -30px rgb(0 0 0 / 0.8), 0 12px 24px -12px rgb(0 0 0 / 0.6);
+  --metal-claro: #d9d6ce;
+  --metal-escuro: #5a5852;
+}
+
+/* 3. Guia de layout
+   - Um eixo central: todo conteúdo vive em .container (1200 px) ou .container--estreito (760 px), centralizado.
+   - Cabeçalhos de seção sempre centralizados (.cabeca-secao): kicker, título, texto e link, nessa ordem.
+   - Espaçamento em múltiplos de 8 px; entre seções, --secao.
+   - Grades internas usam --coluna-gap e alinham pelo topo.
+*/
+:root {
+  --largura: 1200px;
+  --largura-texto: 760px;
+  --margem: 24px;
+  --secao: 96px;
+  --coluna-gap: 24px;
+  --altura-cabecalho: 72px;
+
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body: 'Instrument Sans', system-ui, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  --ease-aprumar: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-barra: 300ms;
+  --radius-card: 16px;
+  --radius-pill: 999px;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --margem: 48px;
+    --secao: 144px;
+    --coluna-gap: 32px;
+  }
+}
+
+.container {
+  width: min(var(--largura), 100% - var(--margem) * 2);
+  margin-inline: auto;
+}
+
+.container--estreito {
+  width: min(var(--largura-texto), 100% - var(--margem) * 2);
+  margin-inline: auto;
+}
+
+.secao {
+  padding-block: var(--secao);
+}
+
+/* Seção com fundo de superfície, para alternar o ritmo da página sem linhas */
+.secao--superficie {
+  position: relative;
+  background: var(--superficie);
+}
+
+/*
+  Divisor em meio-tom (referência: Contra Labs, no Mobbin). Acima e abaixo de toda
+  .secao--superficie, seis fileiras de pontos da cor da superfície diminuem até sumir,
+  e a seção se dissolve no fundo. Cada camada é uma fileira (repeat-x), com o raio caindo
+  de 6 px para 1 px; as fileiras alternadas são deslocadas meio passo, como num retícula.
+*/
+.secao--superficie::before,
+.secao--superficie::after {
+  --p: var(--superficie);
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 72px;
+  pointer-events: none;
+  background-repeat: repeat-x;
+  background-size: 12px 12px;
+  background-image:
+    radial-gradient(circle, var(--p) 6px, transparent 6.5px),
+    radial-gradient(circle, var(--p) 4.8px, transparent 5.3px),
+    radial-gradient(circle, var(--p) 3.8px, transparent 4.3px),
+    radial-gradient(circle, var(--p) 2.8px, transparent 3.3px),
+    radial-gradient(circle, var(--p) 1.9px, transparent 2.4px),
+    radial-gradient(circle, var(--p) 1.1px, transparent 1.6px);
+}
+
+.secao--superficie::before {
+  bottom: 100%;
+  background-position:
+    0 100%,
+    6px calc(100% - 12px),
+    0 calc(100% - 24px),
+    6px calc(100% - 36px),
+    0 calc(100% - 48px),
+    6px calc(100% - 60px);
+}
+
+.secao--superficie::after {
+  top: 100%;
+  background-position:
+    0 0,
+    6px 12px,
+    0 24px,
+    6px 36px,
+    0 48px,
+    6px 60px;
+}
+
+/*
+  Campo de pontos no fundo (referência: Airtable e Melius, no Mobbin). Uma grade fina
+  de pontos que se dissolve a partir da base da seção, com um ponto laranja a cada quatro.
+  Uso: adicionar .campo-pontos à seção; o efeito fica atrás do conteúdo.
+*/
+.campo-pontos {
+  position: relative;
+  isolation: isolate;
+}
+
+.campo-pontos::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  height: 75%;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, var(--destaque) 1.8px, transparent 2.3px),
+    radial-gradient(circle, var(--borda-forte) 1.2px, transparent 1.7px);
+  background-size:
+    72px 72px,
+    18px 18px;
+  background-position: center bottom;
+  mask-image: radial-gradient(ellipse 60% 85% at 50% 100%, #000 15%, transparent 72%);
+  opacity: 0.55;
+  animation: respirar 7s ease-in-out infinite alternate;
+}
+
+@keyframes respirar {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+.cabeca-secao {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: var(--largura-texto);
+  margin: 0 auto 64px;
+  text-align: center;
+}
+
+.cabeca-secao > div {
+  display: grid;
+  gap: 16px;
+  justify-items: center;
+}
+
+.cabeca-secao p:not(.kicker) {
+  max-width: 56ch;
+  color: var(--texto-2);
+}
+
+.centro {
+  text-align: center;
+  justify-items: center;
+}
+
+/* 4. Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-padding-top: calc(var(--altura-cabecalho) + 16px);
+  -webkit-text-size-adjust: 100%;
+  background: var(--fundo);
+}
+
+body {
+  margin: 0;
+  background: var(--fundo);
+  color: var(--texto);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition:
+    background-color 240ms ease,
+    color 240ms ease;
+}
+
+@media (min-width: 900px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-optical-sizing: auto;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+h2 {
+  font-size: clamp(32px, 4.4vw, 56px);
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+}
+
+h3 {
+  font-size: clamp(20px, 2vw, 24px);
+  font-weight: 600;
+}
+
+p {
+  margin: 0;
+  text-wrap: pretty;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--destaque);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--destaque);
+  color: var(--sobre-destaque);
+}
+
+/* Tipografia de apoio */
+.kicker {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+.dado {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.suave {
+  color: var(--texto-suave);
+}
+
+.link {
+  color: var(--destaque-texto);
+  font-weight: 500;
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.so-leitor {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.selo-exemplo {
+  display: inline-block;
+  padding: 2px 8px;
+  border: 1px dashed var(--borda-forte);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texto-suave);
+}
+
+/* 5. Botões */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms var(--ease-aprumar);
+}
+
+.botao:active {
+  transform: scale(0.97);
+}
+
+.botao--principal {
+  background: var(--destaque);
+  color: var(--sobre-destaque);
+}
+
+.botao--principal:hover {
+  background: var(--destaque-forte);
+}
+
+.botao--secundario {
+  background: transparent;
+  border-color: var(--texto);
+  color: var(--texto);
+}
+
+.botao--secundario:hover {
+  background: var(--texto);
+  color: var(--fundo);
+}
+
+.botao--pequeno {
+  min-height: 40px;
+  padding: 0 18px;
+}
+
+/* 6. Animações */
+
+/* Linhas do título começam tortas e se aprumam (roteiro 2.4) */
+.aprumar {
+  display: block;
+  transform-origin: center;
+  animation: aprumar var(--dur-barra) var(--ease-aprumar) both;
+  animation-delay: calc(var(--ordem, 0) * 90ms + 500ms);
+}
+
+@keyframes aprumar {
+  from {
+    rotate: var(--angulo, 0deg);
+  }
+  to {
+    rotate: 0deg;
+  }
+}
+
+/*
+  Entrada das seções (referências: TinyWins e Sana, no Mobbin): o bloco sobe levemente
+  torto e se apruma enquanto entra na tela. Guiada pela rolagem, sem JavaScript.
+  Sem opacidade: o texto mantém o contraste o tempo todo (acessibilidade) e só transform
+  é animado (composto pela GPU).
+  Itens em sequência (cards) usam --ordem para entrar um pouco depois do anterior.
+*/
+@supports (animation-timeline: view()) {
+  .revelar {
+    transform-origin: left bottom;
+    animation: revelar linear both;
+    animation-timeline: view();
+    animation-range: entry calc(var(--ordem, 0) * 6%) entry calc(55% + var(--ordem, 0) * 6%);
+  }
+}
+
+@keyframes revelar {
+  from {
+    transform: translateY(40px) rotate(-1.5deg);
+  }
+  to {
+    transform: none;
+  }
+}
+
+/*
+  Performance: o conteúdo de cada seção só é renderizado perto da tela.
+  Fora dela, o navegador pula estilo, layout, pintura e as animações em ciclo.
+  Aplicado no container interno para não cortar o meio-tom das bordas da seção.
+*/
+.secao > :is(.container, .container--estreito) {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 720px;
+  /* A contenção recorta o que passa da borda: margem para sombras e hovers não serem cortados */
+  overflow-clip-margin: 64px;
+}
+
+/* Barra de leitura do cabeçalho */
+.barra-leitura {
+  display: none;
+}
+
+@supports (animation-timeline: scroll()) {
+  .barra-leitura {
+    display: block;
+    transform-origin: left;
+    animation: encher linear both;
+    animation-timeline: scroll(root);
+  }
+}
+
+@keyframes encher {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Transição entre páginas */
+.pagina-enter-active,
+.pagina-leave-active {
+  transition: opacity 180ms ease;
+}
+
+.pagina-enter-from,
+.pagina-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .aprumar,
+  .revelar {
+    animation: none;
+  }
+
+  .barra-leitura {
+    display: none;
+  }
+}
