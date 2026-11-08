@@ -1,0 +1,16 @@
+node_modules
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+logs
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+
+# Configuração local do Claude Code
+.claude/
