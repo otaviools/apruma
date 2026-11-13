@@ -1,4 +1,4 @@
-# Apruma · site institucional
+# Apruma | Site Institucional
 
 Site institucional da Apruma, construído a partir do [ROTEIRO-SITE.md](ROTEIRO-SITE.md). Esta versão não tem APIs: todas as páginas são estáticas e geradas no build.
 
